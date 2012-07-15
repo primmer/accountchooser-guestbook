@@ -1,6 +1,7 @@
 package guestbook;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,30 +26,58 @@ public class UserServlet extends HttpServlet {
 		String form = req.getParameter("form");
 		String email = req.getParameter("email");
 
-		if ("login".equalsIgnoreCase(form)) {
+		// There are 3 possible ways to post to this servlet:
+		// 1 the login form
+		// 2 the signoup form
+		// 3 accountchooser.com status request
+
+		// login
+		if ("login".equals(form)) {
 			// Tiny bit of error handling on email...
-			if (email != null && !email.isEmpty()) {
-				Entity user = getUser(datastore, email);
-				setUserSession(user, session);
-		    } else {
-		    	resp.sendRedirect("/account-login.jsp");
-		    }
-		} else if ("signup".equalsIgnoreCase(form)) {
+			if (!email.isEmpty()) {
+				loginRegisteredUser(session, datastore, email);
+				resp.sendRedirect("/guestbook.jsp");
+			} else {
+				resp.sendRedirect("/account-login.jsp");
+			}
+
+			// signup
+		} else if ("signup".equals(form)) {
 			// Tiny bit of error handling on email...
-			if (email != null && !email.isEmpty()) {
+			if (!email.isEmpty()) {
 				Entity user = new Entity("User");
 				user.setProperty("email", email);
-				user.setProperty("nickName", req.getParameter("nickName"));
+				user.setProperty("displayName", req.getParameter("displayName"));
 				user.setProperty("photoUrl", req.getParameter("photoUrl"));
 				setUserSession(user, session);
 				datastore.put(user);
-				setUserSession(user, session);
-		    } else {
-		    	resp.sendRedirect("/account-create.jsp");
-		    }			
-		} 
-		
-		resp.sendRedirect("/guestbook.jsp");
+				resp.sendRedirect("/guestbook.jsp");
+			} else {
+				resp.sendRedirect("/account-create.jsp");
+			}
+
+			// 3 accountchooser status
+		} else if (!email.isEmpty()) {
+			// looks like we got a user status request from accountchooser.com
+			resp.setContentType("application/json");
+			Entity user = getUser(datastore, email);
+			String json;
+			if (user != null) {
+				json = "{\"registered\": true}";
+			} else {
+				json = "{\"registered\": false}";
+				// TODO json = "{\"authUri": "http://primco.org"}";
+			}
+			PrintWriter out = resp.getWriter();
+			out.print(json);
+			out.flush();
+		}
+	}
+
+	private void loginRegisteredUser(HttpSession session, DatastoreService datastore,
+			String email) {
+		Entity user = getUser(datastore, email);
+		setUserSession(user, session);
 	}
 
 	private Entity getUser(DatastoreService datastore, String email) {
@@ -60,15 +89,15 @@ public class UserServlet extends HttpServlet {
 
 	private void setUserSession(Entity user, HttpSession session) {
 		session.setAttribute("email", user.getProperty("email"));
-		session.setAttribute("nickName", user.getProperty("nickName"));
+		session.setAttribute("displayName", user.getProperty("displayName"));
 		session.setAttribute("photoUrl", user.getProperty("photoUrl"));
 	}
 	
 	public static String getUserIdentifier(HttpSession session) {
 		String email = (String) session.getAttribute("email");
-		String nickName = (String) session.getAttribute("nickName");
-		// Prefer the nickName over id if available, but both could be null.
-		return "".equals(nickName) ? email: nickName;
+		String displayName = (String) session.getAttribute("displayName");
+		// Prefer the displayName over id if available, but both could be null.
+		return "".equals(displayName) ? email: displayName;
 	}
 	
 	public static String getPhotoTag(String url) {

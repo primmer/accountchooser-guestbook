@@ -5,6 +5,16 @@
 
 <html>
 <head>
+
+<!-- Begin AC integration -->
+<script type="text/javascript" src="https://www.accountchooser.com/ac.js">
+loginUrl: 'account-login.jsp',
+signupUrl: 'account-create.jsp',
+homeUrl: 'guestbook.jsp',
+userStatusUrl: 'userstatus'
+</script>
+<!-- End AC integration -->
+
 <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
 </head>
 
@@ -33,7 +43,7 @@
 			</tr>
 			<tr>
 				<td>display name:</td>
-				<td><input type="text" id="nickName" name="nickName"></td>
+				<td><input type="text" id="displayName" name="displayName"></td>
 			</tr>
 			<tr>
 				<td>picture url:</td>

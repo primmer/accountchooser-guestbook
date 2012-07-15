@@ -5,6 +5,16 @@
 
 <html>
 <head>
+
+<!-- Begin AC integration -->
+<script type="text/javascript" src="https://www.accountchooser.com/ac.js">
+loginUrl: 'account-login.jsp',
+signupUrl: 'account-create.jsp',
+homeUrl: 'guestbook.jsp',
+userStatusUrl: 'userstatus'
+</script>
+<!-- End AC integration -->
+
 <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
 </head>
 
