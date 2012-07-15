@@ -1,8 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.google.appengine.api.users.User" %>
-<%@ page import="com.google.appengine.api.users.UserService" %>
-<%@ page import="com.google.appengine.api.users.UserServiceFactory" %>
 <%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %>
 <%@ page import="com.google.appengine.api.datastore.DatastoreService" %>
 <%@ page import="com.google.appengine.api.datastore.Query" %>
@@ -10,6 +7,8 @@
 <%@ page import="com.google.appengine.api.datastore.FetchOptions" %>
 <%@ page import="com.google.appengine.api.datastore.Key" %>
 <%@ page import="com.google.appengine.api.datastore.KeyFactory" %>
+<%@ page import="guestbook.UserServlet" %>
+<%@ page import="javax.servlet.http.HttpSession" %>
 
 <html>
   <head>
@@ -19,22 +18,20 @@
   <body>
 
 <%
-    String guestbookName = request.getParameter("guestbookName");
+	String guestbookName = request.getParameter("guestbookName");
     if (guestbookName == null) {
         guestbookName = "default";
     }
-    UserService userService = UserServiceFactory.getUserService();
-    User user = userService.getCurrentUser();
-    if (user != null) {
+
+	if (session.getAttribute("email") != null) { 
 %>
-<p>Hello, <%= user.getNickname() %>! (You can
-<a href="<%= userService.createLogoutURL(request.getRequestURI()) %>">sign out</a>.)</p>
+<p>Hello, <%= UserServlet.getUserIdentifier(session) %>! (You can <a href="/signout">sign out</a>.)</p>
+<br/>
 <%
     } else {
 %>
 <p>Hello!
-<a href="<%= userService.createLoginURL(request.getRequestURI()) %>">Sign in</a>
-to include your name with greetings you post.</p>
+<a href="/account-login.jsp">Sign in</a> to include your name with greetings you post.</p>
 <%
     }
 %>
@@ -48,11 +45,15 @@ to include your name with greetings you post.</p>
     List<Entity> greetings = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
     if (greetings.isEmpty()) {
         %>
+        
         <p>Guestbook '<%= guestbookName %>' has no messages.</p>
+
         <%
     } else {
         %>
+        
         <p>Messages in Guestbook '<%= guestbookName %>'.</p>
+        
         <%
         for (Entity greeting : greetings) {
             if (greeting.getProperty("user") == null) {
@@ -61,7 +62,8 @@ to include your name with greetings you post.</p>
                 <%
             } else {
                 %>
-                <p><b><%= ((User) greeting.getProperty("user")).getNickname() %></b> wrote:</p>
+                <p><%= UserServlet.getPhotoTag((String) greeting.getProperty("photoUrl")) %>
+                <b><%= greeting.getProperty("user") %></b> wrote:</p>
                 <%
             }
             %>
