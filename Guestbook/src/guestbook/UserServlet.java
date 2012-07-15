@@ -26,20 +26,36 @@ public class UserServlet extends HttpServlet {
 		String email = req.getParameter("email");
 
 		if ("login".equalsIgnoreCase(form)) {
-			Query query = new Query("User");
-			query.setFilter(new FilterPredicate("email",
-					Query.FilterOperator.EQUAL, email));
-			Entity user = datastore.prepare(query).asSingleEntity();
-			setUserSession(user, session);
+			// Tiny bit of error handling on email...
+			if (email != null && !email.isEmpty()) {
+				Entity user = getUser(datastore, email);
+				setUserSession(user, session);
+		    } else {
+		    	resp.sendRedirect("/account-login.jsp");
+		    }
 		} else if ("signup".equalsIgnoreCase(form)) {
-			Entity user = new Entity("User");
-			user.setProperty("email", email);
-			user.setProperty("nickName", req.getParameter("nickName"));
-			user.setProperty("photoUrl", req.getParameter("photoUrl"));
-			setUserSession(user, session);
-			datastore.put(user);
-		}
+			// Tiny bit of error handling on email...
+			if (email != null && !email.isEmpty()) {
+				Entity user = new Entity("User");
+				user.setProperty("email", email);
+				user.setProperty("nickName", req.getParameter("nickName"));
+				user.setProperty("photoUrl", req.getParameter("photoUrl"));
+				setUserSession(user, session);
+				datastore.put(user);
+				setUserSession(user, session);
+		    } else {
+		    	resp.sendRedirect("/account-create.jsp");
+		    }			
+		} 
+		
 		resp.sendRedirect("/guestbook.jsp");
+	}
+
+	private Entity getUser(DatastoreService datastore, String email) {
+		Query query = new Query("User");
+		query.setFilter(new FilterPredicate("email",
+				Query.FilterOperator.EQUAL, email));
+		return datastore.prepare(query).asSingleEntity();
 	}
 
 	private void setUserSession(Entity user, HttpSession session) {
