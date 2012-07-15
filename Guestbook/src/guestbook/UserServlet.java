@@ -14,7 +14,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
-
+/**
+ * Manages login, signup, and accountchooser status as well as a few helper
+ * functions dealing with users.
+ */
 @SuppressWarnings("serial")
 public class UserServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -31,17 +34,17 @@ public class UserServlet extends HttpServlet {
 		// 2 the signoup form
 		// 3 accountchooser.com status request
 
-		// login
+		// 1 login
 		if ("login".equals(form)) {
 			// Tiny bit of error handling on email...
 			if (!email.isEmpty()) {
 				loginRegisteredUser(session, datastore, email);
-				resp.sendRedirect("/guestbook.jsp");
+				resp.sendRedirect("/accountchooser-store.jsp");
 			} else {
 				resp.sendRedirect("/account-login.jsp");
 			}
 
-			// signup
+			// 2 signup
 		} else if ("signup".equals(form)) {
 			// Tiny bit of error handling on email...
 			if (!email.isEmpty()) {
@@ -51,7 +54,7 @@ public class UserServlet extends HttpServlet {
 				user.setProperty("photoUrl", req.getParameter("photoUrl"));
 				setUserSession(user, session);
 				datastore.put(user);
-				resp.sendRedirect("/guestbook.jsp");
+				resp.sendRedirect("/accountchooser-storejsp");
 			} else {
 				resp.sendRedirect("/account-create.jsp");
 			}
@@ -74,8 +77,8 @@ public class UserServlet extends HttpServlet {
 		}
 	}
 
-	private void loginRegisteredUser(HttpSession session, DatastoreService datastore,
-			String email) {
+	private void loginRegisteredUser(HttpSession session,
+			DatastoreService datastore, String email) {
 		Entity user = getUser(datastore, email);
 		setUserSession(user, session);
 	}
@@ -92,15 +95,17 @@ public class UserServlet extends HttpServlet {
 		session.setAttribute("displayName", user.getProperty("displayName"));
 		session.setAttribute("photoUrl", user.getProperty("photoUrl"));
 	}
-	
+
 	public static String getUserIdentifier(HttpSession session) {
 		String email = (String) session.getAttribute("email");
 		String displayName = (String) session.getAttribute("displayName");
 		// Prefer the displayName over id if available, but both could be null.
-		return "".equals(displayName) ? email: displayName;
+		return (null == displayName || "".equals(displayName)) ? email
+				: displayName;
 	}
-	
+
 	public static String getPhotoTag(String url) {
-		return "".equals(url) ? "" : "<img src=" + url + " style=padding-right:10>";
+		return "".equals(url) ? "" : "<img src=" + url
+				+ " style=padding-right:10>";
 	}
 }
