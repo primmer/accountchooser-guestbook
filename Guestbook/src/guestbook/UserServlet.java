@@ -54,7 +54,7 @@ public class UserServlet extends HttpServlet {
 				user.setProperty("photoUrl", req.getParameter("photoUrl"));
 				setUserSession(user, session);
 				datastore.put(user);
-				resp.sendRedirect("/accountchooser-storejsp");
+				resp.sendRedirect("/accountchooser-store.jsp");
 			} else {
 				resp.sendRedirect("/account-create.jsp");
 			}
