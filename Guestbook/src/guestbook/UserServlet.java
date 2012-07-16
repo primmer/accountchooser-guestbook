@@ -38,8 +38,7 @@ public class UserServlet extends HttpServlet {
 		if ("login".equals(form)) {
 			// Tiny bit of error handling on email...
 			if (!email.isEmpty()) {
-				loginRegisteredUser(session, datastore, email);
-				resp.sendRedirect("/accountchooser-store.jsp");
+				loginRegisteredUser(session, datastore, email, resp);
 			} else {
 				resp.sendRedirect("/account-login.jsp");
 			}
@@ -78,9 +77,17 @@ public class UserServlet extends HttpServlet {
 	}
 
 	private void loginRegisteredUser(HttpSession session,
-			DatastoreService datastore, String email) {
+			DatastoreService datastore, String email, HttpServletResponse resp)
+			throws IOException {
 		Entity user = getUser(datastore, email);
-		setUserSession(user, session);
+		if (user != null) {
+			setUserSession(user, session);
+			// The user wasn't registered and we don't have fancy form error
+			// handling.
+		} else {
+			resp.sendRedirect("/account-login.jsp");
+		}
+		resp.sendRedirect("/accountchooser-store.jsp");
 	}
 
 	private Entity getUser(DatastoreService datastore, String email) {
