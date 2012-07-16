@@ -85,7 +85,7 @@ public class UserServlet extends HttpServlet {
 			// The user wasn't registered and we don't have fancy form error
 			// handling.
 		} else {
-			resp.sendRedirect("/account-login.jsp");
+			resp.sendRedirect("/account-create.jsp");
 		}
 		resp.sendRedirect("/accountchooser-store.jsp");
 	}
