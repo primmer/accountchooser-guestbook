@@ -10,12 +10,11 @@
 
 <body>
 	<%
-	if (session.getAttribute("email") != null) {
+	if (session.getAttribute("user_id") != null) {
 	// The user is already signed in. let them sign out.
     %>
 	<p>
-		Hello,
-		<%= UserServlet.getUserIdentifier(session) %>! (You can <a
+		Hello, <%= UserServlet.getUserIdentifier(session) %>! (You can <a
 			href="/signout">sign out</a>.)
 	</p>
 	<%
@@ -23,7 +22,10 @@
 	    // we didn't come here from a sign-in formpost, display the form
 	%>
 	<p>
-		Hello! Sign in to include your name with greetings you post.
+	    Welcome to the Account Chooser Guestbook java sample.
+	</p>
+	<p>
+		Sign in with an existing account.
 	</p>
 	<p>
 	   Or, <a href="/account-create.jsp">Sign Up</a> if you don't have a username.
@@ -32,11 +34,11 @@
 	    <input type="hidden" name="form" value="login">
 		<table>
 			<tr>
-				<td>username:</td>
-				<td><input type="text" id="email" name="email"></td>
+				<td>User Id:</td>
+				<td><input type="text" id="user_id" name="user_id"></td>
 			</tr>
 			<tr>
-				<td>password:</td>
+				<td>Password:</td>
 				<td><input type="password" id="password"></td>
 			</tr>
 			<tr>
@@ -47,6 +49,6 @@
 	<%
     }
 %>
-	
+
 </body>
 </html>

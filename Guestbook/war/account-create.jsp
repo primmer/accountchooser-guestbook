@@ -11,7 +11,7 @@
 <body>
 
 	<%
-	if (session.getAttribute("email") != null) {
+	if (session.getAttribute("user_id") != null) {
     // The user is already signed in. let them sign out.
 %>
 	<p>
@@ -28,19 +28,19 @@
     <input type="hidden" name="form" value="signup">
 		<table>
 			<tr>
-				<td>email:</td>
-				<td><input type="text" id="email" name="email"></td>
+				<td>User Id:</td>
+				<td><input type="text" id="user_id" name="user_id"></td>
 			</tr>
 			<tr>
-				<td>display name:</td>
-				<td><input type="text" id="nickName" name="nickName"></td>
+				<td>Name:</td>
+				<td><input type="text" id="name" name="name"></td>
 			</tr>
 			<tr>
-				<td>picture url:</td>
-				<td><input type="text" id="photoUrl" name="photoUrl"></td>
+				<td>Picture Url:</td>
+				<td><input type="text" id="photo" name="photo"></td>
 			</tr>
 			<tr>
-				<td>password:</td>
+				<td>Password:</td>
 				<td><input type="password" id="password"></td>
 			</tr>
 			<tr>

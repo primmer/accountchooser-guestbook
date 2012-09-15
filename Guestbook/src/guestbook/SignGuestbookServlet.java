@@ -18,16 +18,16 @@ import javax.servlet.http.HttpSession;
 public class SignGuestbookServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		
+
 		HttpSession session = req.getSession(true);
-		
+
 		String guestbookName = req.getParameter("guestbookName");
 		Key guestbookKey = KeyFactory.createKey("Guestbook", guestbookName);
 		String content = req.getParameter("content");
 		Date date = new Date();
 		Entity greeting = new Entity("Greeting", guestbookKey);
 		greeting.setProperty("user", UserServlet.getUserIdentifier(session));
-		greeting.setProperty("photoUrl", session.getAttribute("photoUrl"));
+		greeting.setProperty("photo", session.getAttribute("photo"));
 		greeting.setProperty("date", date);
 		greeting.setProperty("content", content);
 

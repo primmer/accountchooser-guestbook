@@ -14,6 +14,10 @@ public class SignoutServlet extends HttpServlet {
 
 		HttpSession session = req.getSession(true);
 		session.invalidate();
-		resp.sendRedirect(req.getHeader("Referer"));
+		String previous = req.getHeader("Referer");
+		if (null == previous) {
+			resp.sendRedirect("/guestbook.jsp");
+		}
+		resp.sendRedirect(previous);
 	}
 }

@@ -23,55 +23,74 @@ public class UserServlet extends HttpServlet {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		String form = req.getParameter("form");
-		String email = req.getParameter("email");
+		String user_id = req.getParameter("user_id");
 
-		if ("login".equalsIgnoreCase(form)) {
-			// Tiny bit of error handling on email...
-			if (email != null && !email.isEmpty()) {
-				Entity user = getUser(datastore, email);
-				setUserSession(user, session);
-		    } else {
-		    	resp.sendRedirect("/account-login.jsp");
-		    }
-		} else if ("signup".equalsIgnoreCase(form)) {
-			// Tiny bit of error handling on email...
-			if (email != null && !email.isEmpty()) {
+		if ("login".equals(form)) {
+			// Tiny bit of error handling on user_id...
+			if (!user_id.isEmpty()) {
+				loginRegisteredUser(session, datastore, user_id, resp);
+			} else {
+				// no user_id provided and no fancy form error handling.
+				resp.sendRedirect("/account-login.jsp");
+			}
+		} else if ("signup".equals(form)) {
+			// Tiny bit of error handling on user_id...
+			if (!user_id.isEmpty()) {
 				Entity user = new Entity("User");
-				user.setProperty("email", email);
-				user.setProperty("nickName", req.getParameter("nickName"));
-				user.setProperty("photoUrl", req.getParameter("photoUrl"));
-				setUserSession(user, session);
+				user.setProperty("user_id", user_id);
+				user.setProperty("name", req.getParameter("name"));
+				user.setProperty("photo", req.getParameter("photo"));
 				datastore.put(user);
-				setUserSession(user, session);
-		    } else {
-		    	resp.sendRedirect("/account-create.jsp");
-		    }			
-		} 
-		
-		resp.sendRedirect("/guestbook.jsp");
+				loginRegisteredUser(session, user, resp);
+			} else {
+				// no user_id provided and no fancy form error handling.
+				resp.sendRedirect("/account-create.jsp");
+			}
+		}
 	}
 
-	private Entity getUser(DatastoreService datastore, String email) {
+	private void loginRegisteredUser(HttpSession session,
+			DatastoreService datastore, String user_id, HttpServletResponse resp)
+			throws IOException {
+		Entity user = getUser(datastore, user_id);
+		loginRegisteredUser(session, user, resp);
+	}
+
+	private void loginRegisteredUser(HttpSession session,
+			Entity user, HttpServletResponse resp) throws IOException {
+		if (user != null) {
+			setUserSession(user, session);
+		} else {
+			// The user wasn't registered and we don't have fancy form error
+			// handling.
+			resp.sendRedirect("/account-create.jsp");
+		}
+		// At the end of a login, go to the homepage.
+		resp.sendRedirect("/guestbook.jsp");
+	}
+	
+	private Entity getUser(DatastoreService datastore, String user_id) {
 		Query query = new Query("User");
-		query.setFilter(new FilterPredicate("email",
-				Query.FilterOperator.EQUAL, email));
+		query.setFilter(new FilterPredicate("user_id",
+				Query.FilterOperator.EQUAL, user_id));
 		return datastore.prepare(query).asSingleEntity();
 	}
 
 	private void setUserSession(Entity user, HttpSession session) {
-		session.setAttribute("email", user.getProperty("email"));
-		session.setAttribute("nickName", user.getProperty("nickName"));
-		session.setAttribute("photoUrl", user.getProperty("photoUrl"));
+		session.setAttribute("user_id", user.getProperty("user_id"));
+		session.setAttribute("name", user.getProperty("name"));
+		session.setAttribute("photo", user.getProperty("photo"));
 	}
-	
+
 	public static String getUserIdentifier(HttpSession session) {
-		String email = (String) session.getAttribute("email");
-		String nickName = (String) session.getAttribute("nickName");
-		// Prefer the nickName over id if available, but both could be null.
-		return "".equals(nickName) ? email: nickName;
+		String user_id = (String) session.getAttribute("user_id");
+		String name = (String) session.getAttribute("name");
+		// Prefer the name over id if available, but both could be null.
+		return (null == name || "".equals(name)) ? user_id : name;
 	}
-	
+
 	public static String getPhotoTag(String url) {
-		return "".equals(url) ? "" : "<img src=" + url + " style=padding-right:10>";
+		return "".equals(url) ? "" : "<img src=" + url
+				+ " style=padding-right:10>";
 	}
 }

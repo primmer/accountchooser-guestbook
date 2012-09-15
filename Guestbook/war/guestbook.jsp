@@ -23,19 +23,20 @@
         guestbookName = "default";
     }
 
-	if (session.getAttribute("email") != null) { 
+	if (session.getAttribute("user_id") != null) { 
 %>
 <p>Hello, <%= UserServlet.getUserIdentifier(session) %>! (You can <a href="/signout">sign out</a>.)</p>
 <br/>
 <%
     } else {
 %>
-<p>Hello!
-<a href="/account-login.jsp">Sign in</a> to include your name with greetings you post.</p>
+<p>Hello. This is the AccountChooser Guestbook java sample application. 
+</p>
+<p>Once you <a href="/account-login.jsp">sign in</a> 
+   you can include your name and photo with greetings you post.</p>
 <%
     }
 %>
-
 <%
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     Key guestbookKey = KeyFactory.createKey("Guestbook", guestbookName);
@@ -45,14 +46,13 @@
     List<Entity> greetings = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
     if (greetings.isEmpty()) {
         %>
-        
         <p>Guestbook '<%= guestbookName %>' has no messages.</p>
 
         <%
     } else {
         %>
-        
         <p>Messages in Guestbook '<%= guestbookName %>'.</p>
+        <table border="1"><tr><td>
         
         <%
         for (Entity greeting : greetings) {
@@ -62,7 +62,7 @@
                 <%
             } else {
                 %>
-                <p><%= UserServlet.getPhotoTag((String) greeting.getProperty("photoUrl")) %>
+                <p><%= UserServlet.getPhotoTag((String) greeting.getProperty("photo")) %>
                 <b><%= greeting.getProperty("user") %></b> wrote:</p>
                 <%
             }
@@ -72,7 +72,8 @@
         }
     }
 %>
-
+</td></tr>
+</table>
     <form action="/sign" method="post">
       <div><textarea name="content" rows="3" cols="60"></textarea></div>
       <div><input type="submit" value="Post Greeting" /></div>
