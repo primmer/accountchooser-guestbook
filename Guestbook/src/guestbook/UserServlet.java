@@ -60,13 +60,14 @@ public class UserServlet extends HttpServlet {
 			Entity user, HttpServletResponse resp) throws IOException {
 		if (user != null) {
 			setUserSession(user, session);
+			// At the end of a login, always attempt to store the account in
+			// accountchooser.
+			resp.sendRedirect("/accountchooser-store.jsp");
 		} else {
 			// The user wasn't registered and we don't have fancy form error
-			// handling.
+			// handling. Don't store, try to create an account.
 			resp.sendRedirect("/account-create.jsp");
 		}
-		// At the end of a login, go to the homepage.
-		resp.sendRedirect("/guestbook.jsp");
 	}
 	
 	private Entity getUser(DatastoreService datastore, String user_id) {
