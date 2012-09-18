@@ -1,6 +1,7 @@
 package guestbook;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +25,15 @@ public class UserServlet extends HttpServlet {
 				.getDatastoreService();
 		String form = req.getParameter("form");
 		String user_id = req.getParameter("user_id");
+		// email paramter is posted from accountchooser.com session selector.
+		String email = req.getParameter("email");
+		
+		// There are 3 possible ways to post to this servlet:
+		// 1 the login form
+		// 2 the signoup form
+		// 3 accountchooser.com status request
 
+		// 1 login
 		if ("login".equals(form)) {
 			// Tiny bit of error handling on user_id...
 			if (!user_id.isEmpty()) {
@@ -33,6 +42,8 @@ public class UserServlet extends HttpServlet {
 				// no user_id provided and no fancy form error handling.
 				resp.sendRedirect("/account-login.jsp");
 			}
+			
+			// 2 signup
 		} else if ("signup".equals(form)) {
 			// Tiny bit of error handling on user_id...
 			if (!user_id.isEmpty()) {
@@ -45,8 +56,23 @@ public class UserServlet extends HttpServlet {
 			} else {
 				// no user_id provided and no fancy form error handling.
 				resp.sendRedirect("/account-create.jsp");
+			} 
+			
+			// 3 accountchooser status
+		} else if (!email.isEmpty()) {
+				// looks like we got a user status request from accountchooser.com
+				resp.setContentType("application/json");
+				Entity user = getUser(datastore, email);
+				String json;
+				if (user != null) {
+					json = "{\"registered\": true}";
+				} else {
+					json = "{\"registered\": false}";
+				}
+				PrintWriter out = resp.getWriter();
+				out.print(json);
+				out.flush();
 			}
-		}
 	}
 
 	private void loginRegisteredUser(HttpSession session,

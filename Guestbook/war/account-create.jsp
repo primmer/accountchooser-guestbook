@@ -3,8 +3,28 @@
 <%@ page import="java.util.List" %>
 <%@ page import="javax.servlet.http.HttpSession" %>
 
+<%
+// If the user came here from the account selector, ac.js will 
+// pre-fill the form fields.
+// The form field names must match the defaults or be specified
+// in the script tag.
+%>
+
 <html>
 <head>
+
+<!-- Begin AC integration -->
+<script type="text/javascript" src="https://www.accountchooser.com/ac.js">
+loginUrl: '/account-login.jsp',
+signupUrl: '/account-create.jsp',
+homeUrl: '/guestbook.jsp',
+userStatusUrl: '/userstatus',
+siteEmailId: 'user_id',
+siteDisplayNameId: 'name',
+sitePhotoUrlId: 'photo',
+</script>
+<!-- End AC integration -->
+
 <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
 </head>
 
