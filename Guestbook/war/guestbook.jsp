@@ -10,12 +10,6 @@
 <%@ page import="guestbook.UserServlet" %>
 <%@ page import="javax.servlet.http.HttpSession" %>
 
-<% 
-// This page has no direct accountchooser integration. 
-// It's simply the guestbook application itself.
-// see /account-login.jsp for Account Chooser info.
-%>
-
 <html>
   <head>
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
