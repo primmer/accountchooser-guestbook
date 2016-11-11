@@ -12,7 +12,6 @@
         <servlet-name>sign</servlet-name>
         <url-pattern>/sign</url-pattern>
     </servlet-mapping>
-
     <servlet>
         <servlet-name>user</servlet-name>
         <servlet-class>guestbook.UserServlet</servlet-class>
@@ -21,11 +20,6 @@
         <servlet-name>user</servlet-name>
         <url-pattern>/user</url-pattern>
     </servlet-mapping>
-        <servlet-mapping>
-        <servlet-name>user</servlet-name>
-        <url-pattern>/userstatus</url-pattern>
-    </servlet-mapping>
-
     <servlet>
         <servlet-name>signout</servlet-name>
         <servlet-class>guestbook.SignoutServlet</servlet-class>
@@ -34,7 +28,6 @@
         <servlet-name>signout</servlet-name>
         <url-pattern>/signout</url-pattern>
     </servlet-mapping>
-
     <welcome-file-list>
         <welcome-file>guestbook.jsp</welcome-file>
     </welcome-file-list>
